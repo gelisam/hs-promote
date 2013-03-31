@@ -36,11 +36,11 @@ type_eq (x:xs) r = return $ TySynInstD x (map ConT xs) $ ConT r
 -- > promote_id ''Int
 -- [d| instance Compatible Int Int where
 --       type Promote Int Int = Int
---       convert = id >< id |]
+--       convert = id |]
 promote_id :: Name -> Q Dec
 promote_id t = mkInstance [''Compatible, t, t] $ sequence [
                  [''Promote, t, t] `type_eq` t,
-                 decl [d| promote = id >< id |]
+                 decl [d| promote = id |]
                ]
 
 genInstances :: [Name] -> Q [Dec]
