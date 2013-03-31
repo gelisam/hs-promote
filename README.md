@@ -1,7 +1,7 @@
 Type promotion in haskell
 =========================
 
-Like in Haskell, the arithmetic operations of C++ always act on identical types (ex: <tt>2 + 2</tt> or <tt>2.0 + 2.0</tt>, but not <tt>2 + 2.0</t>>).
+Like in Haskell, the arithmetic operations of C++ always act on identical types (ex: <tt>2 + 2</tt> or <tt>2.0 + 2.0</tt>, but not <tt>2 + 2.0</tt>).
 
 Unlike Haskell, C++ automatically promotes the arguments of arithmetic operations to the most general type. Lest it be thought that C++ is superior to Haskell in this regard, here is an implementation of type promotion in Haskell.
 
