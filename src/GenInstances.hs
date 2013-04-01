@@ -1,8 +1,9 @@
 {-# LANGUAGE TypeFamilies, TemplateHaskell #-}
 module GenInstances where
 
+import Data.List
+import Control.Monad
 import Language.Haskell.TH.Syntax
-import Control.Applicative
 import Promote
 
 
@@ -85,6 +86,25 @@ promote_both t t' [] = sequence [
 promote_both t t' fs =do es <- sequence fs
                          sequence [ promote_right t t' (reverse es)
                                   , promote_left t' t (reverse es) ]
+
+-- > promote_seq [''A, ''B, ''C] ['a_to_b, 'b_to_c]
+-- [d| instance Compatible A A where ...
+--     instance Compatible A B where ...
+--     instance Compatible A C where ...
+--     instance Compatible B A where ...
+--     instance Compatible B B where ...
+--     instance Compatible B C where ...
+--     instance Compatible C A where ...
+--     instance Compatible C B where ...
+--     instance Compatible C C where ... |]
+promote_seq :: [Name] -> [Q Exp] -> Q [Dec]
+promote_seq [t] [] = sequence [promote_id t]
+promote_seq ts fs = do dds <- mapM promote $ zip ts (inits fs)
+                       ds' <- promote_seq (tail ts) (tail fs)
+                       let ds = concat dds
+                       return $ ds ++ ds'
+                    where
+  promote = uncurry $ promote_both $ head ts
 
 genInstances :: [Name] -> Q [Dec]
 genInstances = mapM promote_id
