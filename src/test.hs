@@ -15,8 +15,8 @@ d42 :: Double
 d42 = 42
 
 
-$(promote_seq [''Int, ''Float, ''Double] [[|fromIntegral :: Int -> Float|]
-                                         ,[|realToFrac :: Float -> Double|]])
+$(promote_all [''Int, ''Float, ''Double]
+              ['fromIntegral, 'realToFrac])
 
 main = do print $ i42 + i42  -- typechecks
           print $ f42 + f42  -- typechecks

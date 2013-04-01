@@ -106,5 +106,14 @@ promote_seq ts fs = do dds <- mapM promote $ zip ts (inits fs)
                     where
   promote = uncurry $ promote_both $ head ts
 
+promote_all :: [Name] -> [Name] -> Q [Dec]
+promote_all ts fs = promote_seq ts es where
+  type_pairs = zip ts (tail ts)
+  es = zipWith annotate fs type_pairs
+  annotate f (src, dst) = [|$(f') :: $(src') -> $(dst')|] where
+    f' = return $ VarE f
+    src' = return $ ConT src
+    dst' = return $ ConT dst
+
 genInstances :: [Name] -> Q [Dec]
 genInstances = mapM promote_id
