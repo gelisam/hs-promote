@@ -16,9 +16,10 @@ d42 = 42
 
 
 $(genInstances [''Int, ''Float, ''Double])
-$(promote_both ''Int ''Double ['fromIntegral])
-$(promote_both ''Int ''Float ['fromIntegral])
-$(promote_both ''Float ''Double ['realToFrac])
+$(promote_both ''Int ''Float [[|fromIntegral|]])
+$(promote_both ''Float ''Double [[|realToFrac|]])
+$(promote_both ''Int ''Double [[|fromIntegral :: Int -> Float|]
+                              ,[|realToFrac :: Float -> Double|]])
 
 main = do print $ i42 + i42  -- typechecks
           print $ f42 + f42  -- typechecks
