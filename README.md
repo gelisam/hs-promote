@@ -11,4 +11,4 @@ Implementation
 
 I use type families to compute the resulting type, e.g. <tt>Promote Int Double = Double</tt> because the result of <tt>2 + 2.0</tt> is a <tt>Double</tt>.
 
-One downside of this implementation strategy is that we need to define a quadratic number of instances, one for each type of compatible types. To avoid doing this, I use Template Haskell to generate all the instances.
+One downside of this implementation strategy is that we need to define a quadratic number of instances, one for each pair of compatible types. To avoid doing this, I use Template Haskell to generate all the instances.
