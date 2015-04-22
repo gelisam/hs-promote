@@ -38,7 +38,11 @@ mkInstance = fmap . InstanceD [] . appT
 -- [d| instance Compatible Int Double where
 --       type Promote Int Double = Double |]
 type_eq :: [Name] -> Name -> Q Dec
-type_eq (x:xs) r = return $ TySynInstD x (map ConT xs) $ ConT r
+type_eq (x:xs) r = return $ TySynInstD x
+                          $ TySynEqn (map ConT xs) (ConT r)
+
+promoteName :: Q Pat
+promoteName = return $ VarP 'promote
 
 -- > promote_id ''Int
 -- [d| instance Compatible Int Int where
@@ -47,7 +51,7 @@ type_eq (x:xs) r = return $ TySynInstD x (map ConT xs) $ ConT r
 promote_id :: Name -> Q Dec
 promote_id t = mkInstance [''Compatible, t, t] $ sequence [
                  [''Promote, t, t] `type_eq` t,
-                 decl [d| promote = id |]
+                 decl [d| $(promoteName) = id |]
                ]
 
 -- > promote_right ''Int ''Double ['f, 'g]
@@ -58,7 +62,7 @@ promote_right :: Name -> Name -> [Exp] -> Q Dec
 promote_right t t' [] = promote_id t
 promote_right t t' fs = mkInstance [''Compatible, t, t'] $ sequence [
                           [''Promote, t, t'] `type_eq` t',
-                          decl [d| promote = $(composeE fs) >< id |]
+                          decl [d| $(promoteName) = $(composeE fs) >< id |]
                         ]
 
 -- > promote_left ''Double ''Int ['f, 'g]
@@ -69,7 +73,7 @@ promote_left :: Name -> Name -> [Exp] -> Q Dec
 promote_left t t' [] = promote_id t
 promote_left t t' fs = mkInstance [''Compatible, t, t'] $ sequence [
                          [''Promote, t, t'] `type_eq` t,
-                         decl [d| promote = id >< $(composeE fs) |]
+                         decl [d| $(promoteName) = id >< $(composeE fs) |]
                        ]
 
 -- > promote_both ''Int ''Double ['int_to_foo, 'foo_to_double]
